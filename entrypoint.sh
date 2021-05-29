@@ -1,28 +1,23 @@
 #!/bin/sh
-adddate() {
-    while IFS= read -r line; do
-        printf '[%s] %s\n' "$(date +'%d:%m:%Y %H:%M:%S.%3N %:::z')" "$line";
-    done
-}
 
-if [ -z $SLEEP_TIME ]
-then
-  >&2 echo "No Sleep time set! Using 300 Seconds"
-  SLEEP_TIME="300"
-fi
+echo TZ="$TZ"
+echo SLEEP_TIME="$SLEEP_TIME"
 
-if [ "$TZ" == "Etc/UTC" ]
-then
-  >&2 echo "Timezone is set to UTC. You might want to set it via env TZ"
-fi
+while [ true ]; do
 
-echo "Going to sleep for $SLEEP_TIME seconds between checks" | adddate
-sh ./check-dir.sh
+  for f in /mail/*/; do
+    mkdir -p "$f"/maildir/new
+    mkdir -p "$f"/maildir/cur
+    mkdir -p "$f"/maildir/tmp
+  done
 
-while [ true ]
-do
-  echo "Fetching Mail..." | adddate
-  getmail -v | adddate
-  echo "Fetched Mail, sleeping" | adddate
+  mkdir -p /config/data
+
+  for f in /config/*.getmail; do
+    [ -f "$f" ] || break
+    getmail --verbose --getmaildir="/config/data" --rcfile="$f"
+  done
+
   sleep "${SLEEP_TIME}s"
+
 done

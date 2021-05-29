@@ -1,21 +1,16 @@
 FROM debian:10-slim
-LABEL maintainer="Flyffies"
+LABEL maintainer="krraaamer"
+LABEL name="Kramer's Getmail Image"
+LABEL version="2021-05-29"
 
-ENV maintainer="Flyffies"
-ENV SLEEP_TIME="300"
-# In Seconds
+ENV SLEEP_TIME="600"
 ENV TZ="Etc/UTC"
 
-RUN apt update -y && apt upgrade -y && apt install -y getmail
-RUN useradd -ms /bin/bash getmail
+RUN apt update -y && apt upgrade -y && apt install -y nano getmail
+RUN useradd -m -u 1000 -s /bin/bash getmail
 USER getmail
-RUN mkdir -p ~/.getmail/ && chmod 700 ~/.getmail
-RUN mkdir -p ~/maildir/cur && mkdir ~/maildir/new && mkdir ~/maildir/tmp
 
-ADD --chown=getmail:getmail check-dir.sh /home/getmail/check-dir.sh
-ADD --chown=getmail:getmail entrypoint.sh /home/getmail/entrypoint.sh
+ADD --chown=getmail:getmail entrypoint.sh /entrypoint.sh
 
-VOLUME ["/home/getmail/.getmail/", "/home/getmail/maildir/"]
-
-WORKDIR /home/getmail/
+WORKDIR /
 CMD ["bash", "./entrypoint.sh"]
