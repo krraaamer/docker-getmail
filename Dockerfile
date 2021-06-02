@@ -6,7 +6,8 @@ LABEL version="2021-05-29"
 ENV SLEEP_TIME="600"
 ENV TZ="Etc/UTC"
 
-RUN apt update -y && apt upgrade -y && apt install -y nano getmail
+RUN apt update -y && apt upgrade -y && apt install -y getmail
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /tmp/*
 RUN useradd -m -u 1000 -s /bin/bash getmail
 USER getmail
 
